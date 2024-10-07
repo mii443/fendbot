@@ -12,6 +12,8 @@ pub async fn calc(ctx: Context<'_>, expr: String) -> Result<(), Error> {
     let author = ctx.author().id.get();
 
     if !data.contains_key(&author) {
+        let mut context = fend_core::Context::new();
+        context.set_random_u32_fn(rand::random);
         data.insert(author, fend_core::Context::new());
     }
     let mut context = data.get_mut(&ctx.author().id.get()).unwrap();

@@ -15,6 +15,8 @@ pub fn save_context(ctx: &fend_core::Context, id: u64) {
 
 pub fn read_context(path: PathBuf) -> Result<fend_core::Context> {
     let mut context = fend_core::Context::new();
+    context.set_random_u32_fn(rand::random);
+
     let file = File::open(path)?;
     let mut reader = BufReader::new(file);
 

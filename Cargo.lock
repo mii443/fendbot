@@ -505,6 +505,7 @@ dependencies = [
  "fend-core",
  "futures",
  "poise",
+ "rand",
  "reqwest 0.12.8",
  "scraper",
  "serde",
