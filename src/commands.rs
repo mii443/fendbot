@@ -2,7 +2,10 @@ use std::sync::Arc;
 
 use tokio::sync::Mutex;
 
-use crate::{context::save_context, Context, Error};
+use crate::{
+    context::{create_context, save_context},
+    Context, Error,
+};
 
 #[poise::command(prefix_command)]
 pub async fn register(ctx: Context<'_>) -> Result<(), Error> {
@@ -20,9 +23,8 @@ pub async fn calc(ctx: Context<'_>, expr: String) -> Result<(), Error> {
         let mut data = ctx.data().context.lock().await;
 
         if !data.contains_key(&author) {
-            let mut context = fend_core::Context::new();
-            context.set_random_u32_fn(rand::random);
-            data.insert(author, fend_core::Context::new());
+            let context = create_context();
+            data.insert(author, context);
         }
         data.get(&ctx.author().id.get()).unwrap().clone()
     };

@@ -7,6 +7,42 @@ use std::{
 
 use anyhow::{anyhow, Result};
 
+pub fn create_context() -> fend_core::Context {
+    let mut context = fend_core::Context::new();
+    context.set_random_u32_fn(rand::random);
+    context.define_custom_unit_v1(
+        "item",
+        "items",
+        "!",
+        &fend_core::CustomUnitAttribute::AllowLongPrefix,
+    );
+    context.define_custom_unit_v1(
+        "I",
+        "items",
+        "item",
+        &fend_core::CustomUnitAttribute::AllowShortPrefix,
+    );
+    context.define_custom_unit_v1(
+        "stack",
+        "",
+        "64",
+        &fend_core::CustomUnitAttribute::IsLongPrefix,
+    );
+    context.define_custom_unit_v1(
+        "chest",
+        "",
+        "27 stack",
+        &fend_core::CustomUnitAttribute::IsLongPrefix,
+    );
+    context.define_custom_unit_v1(
+        "largechest",
+        "",
+        "2 chest",
+        &fend_core::CustomUnitAttribute::IsLongPrefix,
+    );
+    context
+}
+
 pub fn save_context(ctx: &fend_core::Context, id: u64) {
     let file = File::create(format!("./context/{}", id)).unwrap();
     let mut writer = BufWriter::new(file);
@@ -14,8 +50,7 @@ pub fn save_context(ctx: &fend_core::Context, id: u64) {
 }
 
 pub fn read_context(path: PathBuf) -> Result<fend_core::Context> {
-    let mut context = fend_core::Context::new();
-    context.set_random_u32_fn(rand::random);
+    let mut context = create_context();
 
     let file = File::open(path)?;
     let mut reader = BufReader::new(file);
