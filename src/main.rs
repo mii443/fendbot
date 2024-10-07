@@ -25,6 +25,8 @@ pub struct Data {
 #[tokio::main]
 async fn main() -> Result<()> {
     let token = env::var("BOT_TOKEN")?;
+    let owner = u64::from_str_radix(&env::var("BOT_OWNER")?, 10)?;
+    let prefix = env::var("BOT_PREFIX")?;
 
     let intents =
         serenity::GatewayIntents::non_privileged() | serenity::GatewayIntents::MESSAGE_CONTENT;
@@ -42,10 +44,10 @@ async fn main() -> Result<()> {
         .options(poise::FrameworkOptions {
             commands: vec![register(), calc()],
             prefix_options: PrefixFrameworkOptions {
-                prefix: Some("f:".to_string()),
+                prefix: Some(prefix),
                 ..Default::default()
             },
-            owners: HashSet::from([UserId::new(579330885258838026)]),
+            owners: HashSet::from([UserId::new(owner)]),
             ..Default::default()
         })
         .build();

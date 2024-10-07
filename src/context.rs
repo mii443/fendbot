@@ -27,7 +27,12 @@ pub fn read_context(path: PathBuf) -> Result<fend_core::Context> {
 
 pub fn restore_contexts() -> HashMap<u64, fend_core::Context> {
     let mut result = HashMap::new();
-    let mut dir = std::fs::read_dir("./context").unwrap();
+    let mut dir = if let Ok(dir) = std::fs::read_dir("./context") {
+        dir
+    } else {
+        std::fs::create_dir("./context").unwrap();
+        return HashMap::new();
+    };
 
     while let Some(Ok(entry)) = dir.next() {
         let id = if let Ok(id) = u64::from_str_radix(entry.file_name().to_str().unwrap(), 10) {
