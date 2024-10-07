@@ -33,8 +33,10 @@ pub async fn calc(ctx: Context<'_>, expr: String) -> Result<(), Error> {
         let expr = expr.clone();
         move || async move {
             let mut context = context.lock().await;
-            let eval_result = fend_core::evaluate(&expr, &mut context).unwrap();
-            let main_result = eval_result.get_main_result().to_string();
+            let main_result = match fend_core::evaluate(&expr, &mut context) {
+                Ok(eval_result) => eval_result.get_main_result().to_string(),
+                Err(err) => err.to_string(),
+            };
             main_result
         }
     })
