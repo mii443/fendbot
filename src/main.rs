@@ -2,7 +2,7 @@ mod commands;
 mod context;
 
 use anyhow::Result;
-use commands::{calc, register, reset_context};
+use commands::{calc, fend, register};
 use context::restore_contexts;
 use std::{
     collections::{HashMap, HashSet},
@@ -44,7 +44,7 @@ async fn main() -> Result<()> {
             })
         })
         .options(poise::FrameworkOptions {
-            commands: vec![register(), calc(), reset_context()],
+            commands: vec![register(), calc(), fend()],
             prefix_options: PrefixFrameworkOptions {
                 prefix: Some(prefix),
                 ..Default::default()
