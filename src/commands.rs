@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use poise::{serenity_prelude::CreateAttachment, CreateReply};
 use tokio::sync::Mutex;
 
 use crate::{
@@ -45,7 +46,15 @@ pub async fn calc(ctx: Context<'_>, expr: String) -> Result<(), Error> {
     .await?
     .await;
 
-    ctx.reply(format!("> {}\n{}", expr, result)).await.unwrap();
+    if let Err(_) = ctx.reply(format!("> {}\n{}", expr, result)).await {
+        ctx.reply("Sending result...").await.unwrap();
+        ctx.send(CreateReply::default().attachment(CreateAttachment::bytes(
+            format!("> {}\n{}", expr, result),
+            "result.txt",
+        )))
+        .await
+        .unwrap();
+    }
 
     {
         let mut data = ctx.data().context.lock().await;
