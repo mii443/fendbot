@@ -50,6 +50,42 @@ pub async fn reset(ctx: Context<'_>) -> Result<(), Error> {
 }
 
 #[poise::command(prefix_command, slash_command)]
+pub async fn define_custom_unit(
+    ctx: Context<'_>,
+    singular: String,
+    definition: String,
+    plural: Option<String>,
+) -> Result<(), Error> {
+    let plural = plural.unwrap_or_default();
+    let author = ctx.author().id.get();
+
+    let mut data = ctx.data().context.lock().await;
+
+    if !data.contains_key(&author) {
+        let context = create_context();
+        data.insert(author, context);
+    }
+
+    let context = data.get_mut(&ctx.author().id.get()).unwrap();
+
+    context.define_custom_unit_v1(
+        &singular,
+        &plural,
+        &definition,
+        &fend_core::CustomUnitAttribute::None,
+    );
+
+    ctx.reply(format!(
+        "Custom unit defined.\n{}({}): `{}`",
+        singular, plural, definition,
+    ))
+    .await
+    .unwrap();
+
+    Ok(())
+}
+
+#[poise::command(prefix_command, slash_command)]
 pub async fn calc(ctx: Context<'_>, expr: String) -> Result<(), Error> {
     ctx.defer().await.unwrap();
 
