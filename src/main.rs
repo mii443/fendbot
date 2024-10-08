@@ -20,6 +20,7 @@ type Context<'a> = poise::Context<'a, Data, Error>;
 
 pub struct Data {
     pub context: Arc<Mutex<HashMap<u64, fend_core::Context>>>,
+    pub thread: Arc<Mutex<HashMap<u64, fend_core::Context>>>,
 }
 
 #[tokio::main]
@@ -38,6 +39,7 @@ async fn main() -> Result<()> {
             Box::pin(async move {
                 Ok(Data {
                     context: Arc::new(Mutex::new(contexts)),
+                    thread: Arc::new(Mutex::new(HashMap::new())),
                 })
             })
         })
