@@ -60,8 +60,15 @@ pub async fn calc(ctx: Context<'_>, expr: String) -> Result<(), Error> {
 
 #[poise::command(prefix_command, slash_command)]
 pub async fn reset_context(ctx: Context<'_>) -> Result<(), Error> {
+    let id = ctx.author().id.get();
+
     let mut data = ctx.data().context.lock().await;
-    data.remove_entry(&ctx.author().id.get());
+
+    let context = create_context();
+    save_context(&context, id);
+
+    data.insert(id, context);
+
     ctx.reply("success").await.unwrap();
     Ok(())
 }
