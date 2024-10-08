@@ -27,7 +27,7 @@ pub async fn fend(_: Context<'_>) -> Result<(), Error> {
 #[poise::command(
     prefix_command,
     slash_command,
-    subcommands("reset"),
+    subcommands("reset", "define_custom_unit"),
     subcommand_required
 )]
 pub async fn context(_: Context<'_>) -> Result<(), Error> {
