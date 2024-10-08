@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use poise::{serenity_prelude::CreateAttachment, CreateReply};
 use tokio::sync::Mutex;
+use tracing::{info, trace};
 
 use crate::{
     context::{create_context, save_context},
@@ -36,6 +37,7 @@ pub async fn context(_: Context<'_>) -> Result<(), Error> {
 
 #[poise::command(prefix_command, slash_command)]
 pub async fn reset(ctx: Context<'_>) -> Result<(), Error> {
+    info!("/fend context reset by {}", ctx.author().id);
     let id = ctx.author().id.get();
 
     let mut data = ctx.data().context.lock().await;
@@ -56,6 +58,13 @@ pub async fn define_custom_unit(
     definition: String,
     plural: Option<String>,
 ) -> Result<(), Error> {
+    info!(
+        "/fend context define_custom_unit {} {} {:?} by {}",
+        singular,
+        definition,
+        plural,
+        ctx.author().id
+    );
     let plural = plural.unwrap_or_default();
     let author = ctx.author().id.get();
 
@@ -87,6 +96,7 @@ pub async fn define_custom_unit(
 
 #[poise::command(prefix_command, slash_command)]
 pub async fn calc(ctx: Context<'_>, expr: String) -> Result<(), Error> {
+    info!("/calc {} by {}", expr, ctx.author().id);
     ctx.defer().await.unwrap();
 
     let author = ctx.author().id.get();
@@ -102,6 +112,7 @@ pub async fn calc(ctx: Context<'_>, expr: String) -> Result<(), Error> {
     };
     let context = Arc::new(Mutex::new(context));
 
+    trace!("Evaluating {}", expr);
     let result = tokio::task::spawn_blocking({
         let context = context.clone();
         let expr = expr.clone();
@@ -118,6 +129,7 @@ pub async fn calc(ctx: Context<'_>, expr: String) -> Result<(), Error> {
     .await;
 
     if let Err(_) = ctx.reply(format!("> {}\n{}", expr, result)).await {
+        trace!("Reply using file");
         ctx.reply("Sending result...").await.unwrap();
         ctx.send(CreateReply::default().attachment(CreateAttachment::bytes(
             format!("> {}\n{}", expr, result),

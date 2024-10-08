@@ -9,6 +9,7 @@ use std::{
     env,
     sync::Arc,
 };
+use tracing::{info, Level};
 
 use poise::{
     serenity_prelude::{self as serenity, futures::lock::Mutex, UserId},
@@ -25,6 +26,9 @@ pub struct Data {
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    tracing_subscriber::fmt()
+        .with_max_level(Level::TRACE)
+        .init();
     let token = env::var("BOT_TOKEN")?;
     let owner = u64::from_str_radix(&env::var("BOT_OWNER")?, 10)?;
     let prefix = env::var("BOT_PREFIX")?;
@@ -33,6 +37,8 @@ async fn main() -> Result<()> {
         serenity::GatewayIntents::non_privileged() | serenity::GatewayIntents::MESSAGE_CONTENT;
 
     let contexts = restore_contexts();
+
+    info!("Creating bot client");
 
     let framework = poise::Framework::builder()
         .setup(move |_ctx, _ready, _framework| {
@@ -53,6 +59,8 @@ async fn main() -> Result<()> {
             ..Default::default()
         })
         .build();
+
+    info!("Starting bot client");
 
     let client = serenity::ClientBuilder::new(token, intents)
         .framework(framework)
