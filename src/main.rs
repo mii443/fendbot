@@ -26,9 +26,7 @@ pub struct Data {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    tracing_subscriber::fmt()
-        .with_max_level(Level::TRACE)
-        .init();
+    tracing_subscriber::fmt().with_max_level(Level::INFO).init();
     let token = env::var("BOT_TOKEN")?;
     let owner = u64::from_str_radix(&env::var("BOT_OWNER")?, 10)?;
     let prefix = env::var("BOT_PREFIX")?;
